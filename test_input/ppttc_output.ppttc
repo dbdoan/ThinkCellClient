@@ -1,0 +1,77 @@
+[
+    {
+        "template": "test_input\\template.pptx",
+        "data": [
+            {
+                "name": "Title",
+                "table": [
+                    [
+                        {
+                            "string": "Slide #2"
+                        }
+                    ]
+                ]
+            },
+            {
+                "name": "Chart1",
+                "table": [
+                    [
+                        null,
+                        {
+                            "string": "2023"
+                        },
+                        {
+                            "string": "2024"
+                        },
+                        {
+                            "string": "2025"
+                        }
+                    ],
+                    [],
+                    [
+                        {
+                            "string": "Series 1"
+                        },
+                        {
+                            "number": 4
+                        },
+                        {
+                            "number": 5
+                        },
+                        {
+                            "number": 13
+                        }
+                    ],
+                    [
+                        {
+                            "string": "Series 2"
+                        },
+                        {
+                            "number": 5
+                        },
+                        {
+                            "number": 4
+                        },
+                        {
+                            "number": 22
+                        }
+                    ],
+                    [
+                        {
+                            "string": "Series 3"
+                        },
+                        {
+                            "number": 4
+                        },
+                        {
+                            "number": 7
+                        },
+                        {
+                            "number": 35
+                        }
+                    ]
+                ]
+            }
+        ]
+    }
+]
