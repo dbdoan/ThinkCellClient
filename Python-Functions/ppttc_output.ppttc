@@ -1,6 +1,6 @@
 [
     {
-        "template": "test_input\\template.pptx",
+        "template": "template.pptx",
         "data": [
             {
                 "name": "Title",
@@ -39,7 +39,7 @@
                             "number": 5
                         },
                         {
-                            "number": 13
+                            "number": 3
                         }
                     ],
                     [
@@ -53,7 +53,7 @@
                             "number": 4
                         },
                         {
-                            "number": 22
+                            "number": 2
                         }
                     ],
                     [
@@ -67,7 +67,7 @@
                             "number": 7
                         },
                         {
-                            "number": 35
+                            "number": 3
                         }
                     ]
                 ]

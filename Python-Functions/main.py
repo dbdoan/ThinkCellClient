@@ -8,10 +8,10 @@ os.system(
     "cls" if os.name == "nt" else "clear"
 )
 
-input_csv_path = "test_input\\input.csv"
-input_template_path = "test_input\\template.pptx"
+input_csv_path = "input.csv"
+input_template_path = "template.pptx"
 ppttc_output_path = "ppttc_output.ppttc"
-pptx_output_path = "test_input\\output.pptx"
+pptx_output_path = "output.pptx"
 
 def read_csv(csv_file):
     data = {}
