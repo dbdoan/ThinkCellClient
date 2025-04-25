@@ -25,9 +25,9 @@ const IntroComponent = () => {
                 sequence={[
                     'Introducing Thinkcell Helper',
                     1000,
-                    'Introducing Thinkcell Automator',
+                    'Introducing Thinkcell Pal',
                     1000,
-                    'Introducing Thinkcell Panel',
+                    'Introducing Thinkcell Automator',
                     4000,
                     () => showCursorAnimation(false)
                 ]}
