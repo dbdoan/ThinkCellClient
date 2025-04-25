@@ -23,6 +23,10 @@ const IntroComponent = () => {
                 cursor={false}
                 className={CURSOR_CLASS_NAME}
                 sequence={[
+                    'Introducing Thinkcell Helper',
+                    1000,
+                    'Introducing Thinkcell Automator',
+                    1000,
                     'Introducing Thinkcell Panel',
                     4000,
                     () => showCursorAnimation(false)

@@ -3,6 +3,14 @@
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+
+  --clr-1: #FF6500;
+  --clr-2: #1E3E62;
+  --clr-3: #495a5faa;
+  --clr-4: #0B192C;
+  --clr-5: #61dafbaa ;
+
+  width: 100%;
 }
 
 .logo {
@@ -33,9 +41,54 @@
   }
 }
 
+/* card-border-glow */
+
 .card {
+  background-color: #242424;
+  border-radius: 0.5rem;
+  height: 6em;
+  margin: 0 auto;
+  max-height: 20rem;
+  max-width: 20rem;
+  /* overflow: hidden; */
   padding: 2em;
+  position: relative;
 }
+
+.card::before,
+.card::after {
+  animation: rotation 20s linear infinite;
+  background: conic-gradient(
+    from var(--gradient-angle),
+    var(--clr-5),
+    var(--clr-3),
+    var(--clr-1),
+    var(--clr-3),
+    var(--clr-5));
+  border-radius: 0.5rem;
+  content: "";
+  inset: -.4rem;
+  z-index: -1;
+
+  position: absolute;
+
+}
+
+.card::after{
+  filter: blur(9rem);
+}
+
+@property --gradient-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes rotation {
+  0% { --gradient-angle: 0deg; }
+  100% { --gradient-angle: 360deg }
+}
+/* card-border-glow */
 
 .read-the-docs {
   color: #888;
@@ -54,4 +107,8 @@
 
 .name-highlight {
   color: #61dafbaa;
+}
+
+.developed-by {
+  padding-bottom: 3rem;
 }
