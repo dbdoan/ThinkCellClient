@@ -3,14 +3,30 @@
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+  width: 100%;
 
-  --clr-1: #FF6500;
+  --clr-1: #09d866;
   --clr-2: #1E3E62;
   --clr-3: #495a5faa;
   --clr-4: #0B192C;
   --clr-5: #61dafbaa ;
 
-  width: 100%;
+  --clr-light: rgba(255, 255, 255, 0.87);
+  --clr-dark: #212121;
+  --clr-primary: #61dafbaa;
+  --clr-secondary: #09d866;
+  --clr-accent: #61dafbaa;
+
+  --foreground: var(--clr-dark);
+  --background: var(--clr-light);
+}
+
+@media (prefers-color-scheme: light) {
+  #root {
+    --foreground: var(--clr-light);
+    --background: var(--clr-dark);
+    --clr-accent: #ff6464;
+  }
 }
 
 .logo {
@@ -19,9 +35,11 @@
   will-change: filter;
   transition: filter 300ms;
 }
+
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }
+
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
@@ -44,51 +62,28 @@
 /* card-border-glow */
 
 .card {
-  background-color: #242424;
-  border-radius: 0.5rem;
+  background-color: #333333;
+  border-radius: 1rem;
   height: 6em;
   margin: 0 auto;
   max-height: 20rem;
   max-width: 20rem;
-  /* overflow: hidden; */
   padding: 2em;
-  position: relative;
+  animation: pulse-glow 5s infinite ease-in-out;
+  box-shadow: 0 0 5em var(--clr-accent);
 }
 
-.card::before,
-.card::after {
-  animation: rotation 20s linear infinite;
-  background: conic-gradient(
-    from var(--gradient-angle),
-    var(--clr-5),
-    var(--clr-3),
-    var(--clr-1),
-    var(--clr-3),
-    var(--clr-5));
-  border-radius: 0.5rem;
-  content: "";
-  inset: -.4rem;
-  z-index: -1;
-
-  position: absolute;
-
+@keyframes pulse-glow {
+  0% {
+    box-shadow: 0 0 5em #09d866;
+  }
+  50% {
+    box-shadow: 0 0 5em #61dafb;
+  }
+  100% {
+    box-shadow: 0 0 5em #09d866;
+  }
 }
-
-.card::after{
-  filter: blur(9rem);
-}
-
-@property --gradient-angle {
-  syntax: "<angle>";
-  initial-value: 0deg;
-  inherits: false;
-}
-
-@keyframes rotation {
-  0% { --gradient-angle: 0deg; }
-  100% { --gradient-angle: 360deg }
-}
-/* card-border-glow */
 
 .read-the-docs {
   color: #888;
@@ -106,9 +101,14 @@
 }
 
 .name-highlight {
-  color: #61dafbaa;
+  color: var(--clr-accent);
 }
 
 .developed-by {
+  color: var(--background);
   padding-bottom: 3rem;
+}
+
+.typing-effect-intro {
+  color: var(--background)
 }
