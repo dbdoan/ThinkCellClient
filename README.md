@@ -5,7 +5,8 @@
 
 ## About
 
-Website to convert CSV (Excel) data into Think-Cell Powerpoints utilzing a template.
+A web application that converts CSV (Excel) data into Think-Cell PowerPoint presentations using a predefined template, streamlining the creation of consistent and data-driven slides.
+
 
 ## Roadmap
 - [x] Complete core csv to pptx conversion
