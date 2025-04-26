@@ -15,7 +15,7 @@
   --clr-dark: #3f2828;
   --clr-primary: #61dafbaa;
   --clr-secondary: #09d866;
-  --clr-accent: #61dafbaa;
+  --clr-accent: #2eccf8cb;
 
   --foreground: var(--clr-dark);
   --background: var(--clr-light);
@@ -66,14 +66,18 @@
 /* card-border-glow */
 
 .card {
-  animation: pulse-glow 5s infinite ease-in-out;
+  align-items: center;
+  animation: pulse-glow 20s infinite ease-in-out;
   background-color: #333333;
   border-radius: 0.5rem;
   box-shadow: 0 0 5em var(--clr-accent);
-  height: 6em;
+  display: flex;
+  flex-direction: column;
+  /* height: 100%; */
+  justify-content: space-between;
   margin: 0 auto;
-  max-height: 20rem;
-  max-width: 20rem;
+  /* max-height: 40rem; */
+  max-width: 25rem;
   padding: 2em;
 
 }
@@ -123,3 +127,29 @@
   padding-bottom: 3rem;
 }
 
+.card p {
+  align-items: center;
+  text-align: left;
+}
+
+#upload-form {
+  display: flex;
+  flex-direction: column;
+  height: 20rem;
+  justify-content: center;
+  width: max-content;
+}
+
+.submit-btn {
+  background-color: var(--clr-accent);
+  color: var(--foreground);
+  margin-top: 2rem;
+}
+
+.submit-btn:hover {
+  border-color: white;
+}
+
+.instructions {
+  font-weight: bold;
+}

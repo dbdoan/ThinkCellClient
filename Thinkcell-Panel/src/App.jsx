@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 import IntroComponent from './components/TypingEffect.jsx'
+import { handleKeyFileChange, handleTemplateFileChange } from './components/fileValidator.js';
+
+import './App.scss';
 
 function App() {
   const [count, setCount] = useState(0)
@@ -15,20 +16,22 @@ function App() {
         </div>
         <div className="developed-by">
           <h2>
-            by <span class="name-highlight">Danny Doan</span>
+            by <span className="name-highlight">Danny Doan</span>
           </h2>
         </div>
 
       </div>
 
       <div className="card">
-        <p>
-          test sentence
-        </p>
+        <form id="upload-form">
+          <p className="instructions">To generate a Thinkcell PPTX, 2 files are needed:</p>
+          <p>1. PPTTC (key) OR a properly formatted CSV</p>
+          <input className="choose-file" type="file" name="jsonFile" accept=".ppttc, .csv" onChange={ handleKeyFileChange }/>
+          <p>2. PPTTC Template</p>
+          <input className="choose-file" type="file" name="ppttcFile" accept=".ppttc" onChange={ handleTemplateFileChange } />
+          <button className="submit-btn" type="submit">Upload</button>
+        </form>
       </div>
-      <p className="read-the-docs">
-        {/* Click on the Vite and React logos to learn more */}
-      </p>
     </>
   )
 }
