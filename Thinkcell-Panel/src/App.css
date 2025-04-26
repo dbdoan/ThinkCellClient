@@ -1,6 +1,11 @@
 #root {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
   max-width: 1280px;
   margin: 0 auto;
+  min-height: 100vh;
+  overflow-x: hidden;
   padding: 2rem;
   text-align: center;
   width: 100%;
@@ -26,6 +31,21 @@
     --foreground: var(--clr-light);
     --background: var(--clr-dark);
     --clr-accent: #ff4040;
+  }
+}
+
+@media (max-width: 600px) {
+  #root {
+    /* for smaller screen */
+    padding: 1rem;
+  }
+  .card {
+    max-width: 90vw;
+  }
+
+  .footer svg {
+    width: 4rem;
+    height: 4rem;
   }
 }
 
@@ -73,10 +93,9 @@
   box-shadow: 0 0 5em var(--clr-accent);
   display: flex;
   flex-direction: column;
-  /* height: 100%; */
+  gap: 2rem;
   justify-content: space-between;
   margin: 0 auto;
-  /* max-height: 40rem; */
   max-width: 25rem;
   padding: 2em;
 
@@ -124,7 +143,6 @@
 
 .developed-by {
   color: var(--background);
-  padding-bottom: 3rem;
 }
 
 .card p {
@@ -133,11 +151,13 @@
 }
 
 #upload-form {
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  height: 20rem;
   justify-content: center;
-  width: max-content;
+  max-width: 100%;
+  width: 100%;
+
 }
 
 .submit-btn {
@@ -152,4 +172,41 @@
 
 .instructions {
   font-weight: bold;
+}
+
+.social-logo .background {
+  color: var(--background);
+}
+
+.social-logo .linkedin-logo {
+  color: var(--foreground);
+}
+
+.social-logo .github-logo {
+  color: var(--background);
+}
+
+.footer {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.footer svg {
+  width: 3.8rem;
+  height: 3.8rem;
+  transition: all 0.3s ease;
+}
+
+.footer svg:hover {
+  filter: drop-shadow(0 0 2em var(--clr-accent));
+  transform: scale(1.1);
+}
+
+.card .output {
+  /* background-color: red; */
+  border: 1px solid white;
+  height: 10rem;
+  width: 100%;
 }

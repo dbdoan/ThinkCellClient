@@ -23,6 +23,10 @@
   --background: var(--clr-light);
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     --foreground: var(--clr-light);
