@@ -146,7 +146,6 @@
 }
 
 .card p {
-  align-items: center;
   text-align: left;
 }
 
@@ -207,6 +206,6 @@
 .card .output {
   /* background-color: red; */
   border: 1px solid white;
-  height: 10rem;
+  min-height: 10rem;
   width: 100%;
 }
