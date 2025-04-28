@@ -1,2 +1,3 @@
 /.venv
-/Py-Functions/api-test/.env
+/Backend/FastAPI/.env
+/Thinkcell-Panel/.env
