@@ -1,6 +1,8 @@
 
 import './App.css'
-import { useState } from 'react'
+import { v4 as uuid } from 'uuid';
+import { useState } from 'react';
+import { useEffect } from 'react';
 // import linkedInLogo from './assets/linkedin.svg'
 // import githubLogo from './assets/github.svg'
 import IntroComponent from './components/TypingEffect.jsx'
@@ -12,6 +14,18 @@ function App() {
   const [isUploading, setIsUploading] = useState(false);
   const [keyFile, setKeyFile] = useState(null);
   const [templateFile, setTemplateFile] = useState(null);
+
+  useEffect(() => {
+    // console.log('useEffect is firing')
+    const newUserID = uuid();
+
+    if (!sessionStorage.getItem('userID')) {
+      sessionStorage.setItem('userID', newUserID);
+      console.log("Assigned UUID: ", newUserID);
+    } else {
+      console.log('Existing UUID: ', sessionStorage.getItem('userID'));
+    }
+  }, []);
 
   function handleTemplateFileChange(e) {
     const file = e.target.files[0];
@@ -54,6 +68,26 @@ function App() {
     console.log("Required files successfully submitted");
 
     setIsUploading(true);
+
+    const userID = sessionStorage.getItem('userID');
+
+    fetch(`http://127.0.0.1:8000/user/${userID}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
+    .then(data => {console.log('Success: ', data);
+    })
+    .catch(error => {
+      console.error('Error: ', error);
+    })
   }
 
   return (
