@@ -3,12 +3,11 @@ import './App.css'
 import { v4 as uuid } from 'uuid';
 import { useState } from 'react';
 import { useEffect } from 'react';
-// import linkedInLogo from './assets/linkedin.svg'
-// import githubLogo from './assets/github.svg'
 import IntroComponent from './components/TypingEffect.jsx'
-
 import LinkedInIcon from './components/linkedinLogo.jsx';
 import GithubIcon from './components/githubLogo.jsx';
+
+
 
 function App() {
   const [isUploading, setIsUploading] = useState(false);
@@ -69,13 +68,17 @@ function App() {
 
     setIsUploading(true);
 
+    const fastapiURL = import.meta.env.VITE_FASTAPI_ENDPOINT;
+    console.log(fastapiURL);
     const userID = sessionStorage.getItem('userID');
+    const formData = new FormData();
 
-    fetch(`http://127.0.0.1:8000/user/${userID}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+    formData.append('keyFile', keyFile);
+    formData.append('templateFile', templateFile)
+
+    fetch(`${fastapiURL}/upload/${userID}/`, {
+      method: 'POST',
+      body: formData,
     })
     .then(response => {
       if (!response.ok) {
