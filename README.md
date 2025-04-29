@@ -10,4 +10,9 @@ A web application that converts CSV (Excel) data into Think-Cell PowerPoint pres
 
 ## Roadmap
 - [x] Complete core csv to pptx conversion
-- [ ] Create API to accept input files
+- [x] Create API to accept input files
+- [ ] Thinkcell Server to FastAPI integration
+- [ ] POSTGRE SQL server
+- [ ] Access code generation validation
+- [ ] PPTTC + PPTX => PPTX logic
+- [ ] Let users define their own servers for generation
