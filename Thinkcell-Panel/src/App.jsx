@@ -3,11 +3,9 @@ import './App.css'
 import { v4 as uuid } from 'uuid';
 import { useState } from 'react';
 import { useEffect } from 'react';
-import IntroComponent from './components/TypingEffect.jsx'
+import IntroComponent from './components/TypingEffect'
 import LinkedInIcon from './components/linkedinLogo.jsx';
 import GithubIcon from './components/githubLogo.jsx';
-
-
 
 function App() {
   const [isUploading, setIsUploading] = useState(false);
@@ -35,7 +33,7 @@ function App() {
       setTemplateFile(file);
       console.log("Template file saved: ", file.name)
     } else {
-      alert("Invalid file type. Please upload a .ppttc file.")
+      alert("Invalid file type. Please upload a .pptx file.")
       e.target.value = "";
     }
   }
@@ -104,7 +102,6 @@ function App() {
             by <span className="name-highlight">Danny Doan</span>
           </h2>
         </div>
-
       </div>
 
       <div className="card">
@@ -114,7 +111,7 @@ function App() {
           <input className="choose-file" type="file" name="jsonFile" accept=".ppttc, .csv" onChange={ handleKeyFileChange }/>
           <p>2. PPTX Template</p>
           <input className="choose-file" type="file" name="ppttcFile" accept=".pptx" onChange={ handleTemplateFileChange } />
-          <button className="submit-btn" type="submit">Upload</button>
+          <button className="submit-btn" type="submit" disabled={ isUploading }> { isUploading ? 'Processing...': 'Submit'} </button>
         </form>
         <div className="output">
 
