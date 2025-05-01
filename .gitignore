@@ -1,5 +1,5 @@
 /.venv
 /Backend/FastAPI/.env
 /Thinkcell-Panel/.env
-/Backend/FastAPI/test.py
+# /Backend/FastAPI/test.py
 /Backend/FastAPI/__pycache__/
