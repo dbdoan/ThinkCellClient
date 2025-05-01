@@ -1,7 +1,14 @@
-from fastapi import FastAPI, UploadFile, File
+from collections import defaultdict
+from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
+
+import csv
+import json
 import os
+import subprocess
+
 
 if os.name == "nt":
     os.system("cls")
@@ -11,8 +18,7 @@ else:
 load_dotenv()
 
 vite_url = os.getenv("VITE_URL")
-print("vite_url loaded:", vite_url)
-
+# print("vite_url loaded:", vite_url)
 
 app = FastAPI()
 
@@ -25,33 +31,57 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
+template_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "template"))
+app.mount("/template", StaticFiles(directory=template_dir), name="template")
 
-# @app.get("/user/{uuid}")
-# def read_uuid(uuid: str):
-#     return {"user id: ": uuid}
+key_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "key"))
+app.mount("/key", StaticFiles(directory=key_dir), name="key")
 
 @app.post("/upload/{uuid}/")
 async def upload_files(uuid: str, keyFile: UploadFile = File(...), templateFile: UploadFile = File(...)):
+    key_filename = keyFile.filename
+    _, key_ext = os.path.splitext(key_filename.lower())
+        
+    template_dir = os.path.abspath("template")
+    os.makedirs(template_dir, exist_ok=True)
+    
+    for filename in os.listdir(template_dir):
+        file_path = os.path.join(template_dir, filename)
+        os.remove(file_path)
+    
+    save_template_path = os.path.join(template_dir, templateFile.filename)
+
+    try:
+        content = await templateFile.read()
+        with open(save_template_path, "wb") as file:
+            file.write(content)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to save file due to error: {e}")
+    
+    if key_ext == '.ppttc':
+        print(key_ext)
+    elif key_ext == '.csv':
+        print(key_ext)
     
     json_contents = await keyFile.read()
     json_text = json_contents.decode('utf-8')
-    
-    # return {
-    #     "userID: ": uuid,
-    #     "keyFile: ": keyFile.filename,
-    #     "templateFile: ": templateFile.filename,
-    # }
-    
     return {"keyFile contents: ": json_text}
 
 
-# if file is ppttc, proceed with storing (temp)
-# if file is csv, convert to ppttc
+# return {
+#     "userID: ": uuid,
+#     "keyFile: ": keyFile.filename,
+#     "templateFile: ": templateFile.filename,
+# }
 
-# either way, save the pptx template in temp
+# if key_file is ppttc, proceed with storing key into key folder 
+# if key_file is csv, convert to ppttc before storign into key folder
 
-# then convert the ppttc key to pptx output
-# return to user in root 
+# either way, save the pptx template in template foolder
+
+# then send both key and template file to the thinkcell server
+# save output pptx to output folder and send that output back to user
+
+@app.get("/")
+def read_root():
+    return {"Hello": "World"}
