@@ -14,5 +14,5 @@ A web application that converts CSV (Excel) data into Think-Cell PowerPoint pres
 - [ ] Thinkcell Server to FastAPI integration
 - [ ] POSTGRE SQL server
 - [ ] Access code generation validation
-- [ ] PPTTC + PPTX => PPTX logic
+- [x] PPTTC + PPTX => PPTX logic
 - [ ] Let users define their own servers for generation

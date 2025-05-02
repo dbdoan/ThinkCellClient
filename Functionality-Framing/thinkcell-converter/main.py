@@ -8,21 +8,23 @@ os.system(
     "cls" if os.name == "nt" else "clear"
 )
 
-input_csv_path = "input.csv"
+input_csv_path = "/Users/danny/Documents/GitHub/ThinkCellClient/Functionality-Framing/thinkcell-converter/input.csv"
 input_template_path = "template.pptx"
 ppttc_output_path = "ppttc_output.ppttc"
 pptx_output_path = "output.pptx"
 
 def read_csv(csv_file):
     data = {}
+    
     with open(csv_file, 'r') as file:
         reader = csv.DictReader(file)
-        
+        fieldnames = reader.fieldnames
+        key_column = fieldnames[0]
+
         for row in reader:
-            year = row.pop('Year')
-            data[year] = {series_num: int(count)
+            cell_A1 = row.pop(key_column)
+            data[cell_A1] = {series_num: int(count)
                           for series_num, count in row.items()}
-            # print(row.items())
     return data
 
 # # 1. Take a CSV input and convert it to JSON structure for PPTTC
