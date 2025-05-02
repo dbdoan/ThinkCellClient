@@ -3,13 +3,10 @@ from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
-from pathlib import Path
 
-import csv
 import json
 import os
 import requests
-import subprocess
 
 
 if os.name == "nt":
@@ -31,21 +28,19 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-template_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "template"))
-app.mount("/template", StaticFiles(directory=template_dir), name="template")
-
-key_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "key"))
-app.mount("/key", StaticFiles(directory=key_dir), name="key")
+session_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "sessions"))
+app.mount("/sessions", StaticFiles(directory=session_dir), name="sessions")
 
 @app.post("/upload/{uuid}/")
 async def upload_files(uuid: str, keyFile: UploadFile = File(...), templateFile: UploadFile = File(...)):
     key_filename = keyFile.filename
     _, key_ext = os.path.splitext(key_filename.lower())
-    
-    # // Template path
-    template_dir = os.path.abspath("template")
+
+    # Testing session-based.
+    template_dir = os.path.abspath(os.path.join("sessions", uuid, "template"))
     os.makedirs(template_dir, exist_ok=True)
-    
+
+    # Clear old files in session-specific template dir
     for filename in os.listdir(template_dir):
         template_file_path = os.path.join(template_dir, filename)
         os.remove(template_file_path)
@@ -53,13 +48,13 @@ async def upload_files(uuid: str, keyFile: UploadFile = File(...), templateFile:
     save_template_path = os.path.join(template_dir, "template.pptx")
 
     # // Key path
-    key_dir = os.path.abspath('key')
+    key_dir = os.path.abspath(os.path.join("sessions", uuid, "key"))
     os.makedirs(key_dir, exist_ok=True)
-    
+
+    # Clear old key files
     for filename in os.listdir(key_dir):
-        key_file_path = os.path.join(key_dir, filename)
-        os.remove(key_file_path)
-        
+        os.remove(os.path.join(key_dir, filename))
+
     save_key_path = os.path.join(key_dir, "key.ppttc")
     
     # Save the template file to the template dir
@@ -71,8 +66,6 @@ async def upload_files(uuid: str, keyFile: UploadFile = File(...), templateFile:
         raise HTTPException(status_code=500, detail=f"Failed to save template_file due to error: {e}")
     
     if key_ext == '.ppttc':
-        
-        # Save the key file to the key dir
         try:
             content = await keyFile.read()
             with open(save_key_path, "wb") as file:
@@ -82,19 +75,19 @@ async def upload_files(uuid: str, keyFile: UploadFile = File(...), templateFile:
      
         # Now we can start the processing
         # Input PPTTC file path
-        input_ppttc_path = Path.home() / "Documents" / "Github" / "ThinkCellClient" / "Backend" / "FastAPI" / "key" / "key.ppttc"
-        
+        input_ppttc_path = os.path.join(key_dir, "key.ppttc")
+
         # Read key-file
         with open(input_ppttc_path, "r", encoding="utf-8") as f:
             keyfile_contents = json.load(f)
             
         # Replace all template url in PPTTC
+        # TEMPLATE_URL = f"http://192.168.1.104:8000/sessions/{uuid}/template/template.pptx"
         TEMPLATE_URL = "http://192.168.1.104:8000/template/template.pptx"
 
         for slide in keyfile_contents:
             if "template" in slide:
                 slide["template"] = TEMPLATE_URL
-                
                 
         # Send to Thinkcell Server
         server_url = "http://108.198.175.239:8080/"
@@ -105,19 +98,20 @@ async def upload_files(uuid: str, keyFile: UploadFile = File(...), templateFile:
         response = requests.post(server_url, headers=headers, json=keyfile_contents)
         
         if response.status_code == 200:
-            
-            output_dir = Path(__file__).parent / "output"
-            output_dir.mkdir(exist_ok=True)
-            
-            output_filename = os.path.basename(input_ppttc_path).replace('.ppttc', '.pptx')
-            
-            output_path = output_dir / output_filename
+            output_dir = os.path.abspath(os.path.join("sessions", uuid, "output"))
+            os.makedirs(output_dir, exist_ok=True)
+            output_filename = "output.pptx"
+            output_path = os.path.join(output_dir, output_filename)
             
             with open(output_path, "wb") as f:
                 f.write(response.content)
             print(f"✅ Received and saved {output_filename}!")
             
-            return {"message": "Success", "file": str(output_path.name)}
+            output_url = f"http://192.168.1.104:8000/sessions/{uuid}/output/output.pptx"
+            
+            return {"message": "Success",
+                    "file": os.path.basename(output_path),
+                    "url": output_url}
         else:
             print(f"❌ Error: {response.status_code}")
             print(response.text)

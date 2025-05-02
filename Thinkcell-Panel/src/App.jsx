@@ -12,6 +12,7 @@ function App() {
   const [keyFile, setKeyFile] = useState(null);
   const [templateFile, setTemplateFile] = useState(null);
   const [uploadSuccess, setUploadSuccess] = useState(false);
+  const [downloadURL, setDownloadURL] = useState(null);
 
   useEffect(() => {
     // console.log('useEffect is firing')
@@ -86,7 +87,9 @@ function App() {
       return response.json();
     })
     .then(data => {console.log('Success: ', data);
+      
       setUploadSuccess(true);
+      setDownloadURL(data.url);
     })
     .catch(error => {
       console.error('Error: ', error);
@@ -114,18 +117,10 @@ function App() {
           <p>2. PPTX Template</p>
           <input className="choose-file" type="file" name="ppttcFile" accept=".pptx" onChange={ handleTemplateFileChange } />
 
-          <button className="submit-btn" type="submit" disabled={ isUploading }> { isUploading ? 'Processing...': 'Submit'} </button>
+          <button className="submit-btn" type="submit" disabled={ isUploading }> { isUploading ? 'Processing...': 'Submit' } </button>
 
-          {uploadSuccess && (
-            <div className="output-download">
-              Upload Success!
-            </div>
-          )}
-
+          <button className="download-btn" type="button" disabled={ !uploadSuccess || !downloadURL } onClick={() => window.open(downloadURL, '_blank')}> {uploadSuccess ? 'Download': 'No Output File' }</button>
         </form>
-        <div className="output">
-
-        </div>
       </div>
       
       <div className="footer">
