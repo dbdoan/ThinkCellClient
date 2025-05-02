@@ -11,6 +11,7 @@ function App() {
   const [isUploading, setIsUploading] = useState(false);
   const [keyFile, setKeyFile] = useState(null);
   const [templateFile, setTemplateFile] = useState(null);
+  const [uploadSuccess, setUploadSuccess] = useState(false);
 
   useEffect(() => {
     // console.log('useEffect is firing')
@@ -85,6 +86,7 @@ function App() {
       return response.json();
     })
     .then(data => {console.log('Success: ', data);
+      setUploadSuccess(true);
     })
     .catch(error => {
       console.error('Error: ', error);
@@ -111,7 +113,15 @@ function App() {
           <input className="choose-file" type="file" name="jsonFile" accept=".ppttc, .csv" onChange={ handleKeyFileChange }/>
           <p>2. PPTX Template</p>
           <input className="choose-file" type="file" name="ppttcFile" accept=".pptx" onChange={ handleTemplateFileChange } />
+
           <button className="submit-btn" type="submit" disabled={ isUploading }> { isUploading ? 'Processing...': 'Submit'} </button>
+
+          {uploadSuccess && (
+            <div className="output-download">
+              Upload Success!
+            </div>
+          )}
+
         </form>
         <div className="output">
 
