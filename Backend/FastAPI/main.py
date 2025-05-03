@@ -1,28 +1,32 @@
-from collections import defaultdict
+from datetime import datetime, timedelta
+from dotenv import load_dotenv
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from dotenv import load_dotenv
 
 import json
 import os
 import requests
-
-
-if os.name == "nt":
-    os.system("cls")
-else:
-    os.system("clear")
+import shutil
+import threading
+import time
 
 load_dotenv()
+vite_local_url = os.getenv("VITE_LOCAL_URL")
+vite_external_url = os.getenv("VITE_EXTERNAL_URL")
+fastapi_external_url = os.getenv("FASTAPI_EXTERNAL_URL")
+thinkcell_server_url = os.getenv("THINKCELL_SERVER_URL")
 
-vite_url = os.getenv("VITE_URL")
 app = FastAPI()
 
 # Allows requests from VITE server
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[vite_url, "http://127.0.0.1:5173"],
+    allow_origins=[
+    vite_local_url,
+    vite_external_url,
+    "http://127.0.0.1:5173"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -30,6 +34,26 @@ app.add_middleware(
 
 session_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "sessions"))
 app.mount("/sessions", StaticFiles(directory=session_dir), name="sessions")
+
+def send_to_thinkcell_server(keyfile_contents, uuid):
+    headers = {"Content-Type": "application/vnd.think-cell.ppttc+json"}
+    try:
+        response = requests.post(thinkcell_server_url, headers=headers, json=keyfile_contents)
+        print("Response status:", response.status_code)
+        if response.status_code == 200:
+            output_dir = os.path.abspath(os.path.join("sessions", uuid, "output"))
+            os.makedirs(output_dir, exist_ok=True)
+            output_filename = "output.pptx"
+            output_path = os.path.join(output_dir, output_filename)
+            
+            with open(output_path, "wb") as f:
+                f.write(response.content)
+            print(f"✅ Saved to: {output_path}")
+        else:
+            print("ThinkCell server error:")
+            print(response.text)
+    except Exception as e:
+        print("Failed to contact ThinkCell server:", e)
 
 @app.post("/upload/{uuid}/")
 async def upload_files(uuid: str, keyFile: UploadFile = File(...), templateFile: UploadFile = File(...)):
@@ -44,17 +68,15 @@ async def upload_files(uuid: str, keyFile: UploadFile = File(...), templateFile:
     for filename in os.listdir(template_dir):
         template_file_path = os.path.join(template_dir, filename)
         os.remove(template_file_path)
-
     save_template_path = os.path.join(template_dir, "template.pptx")
 
-    # // Key path
+    # Key path
     key_dir = os.path.abspath(os.path.join("sessions", uuid, "key"))
     os.makedirs(key_dir, exist_ok=True)
 
     # Clear old key files
     for filename in os.listdir(key_dir):
         os.remove(os.path.join(key_dir, filename))
-
     save_key_path = os.path.join(key_dir, "key.ppttc")
     
     # Save the template file to the template dir
@@ -70,60 +92,59 @@ async def upload_files(uuid: str, keyFile: UploadFile = File(...), templateFile:
             content = await keyFile.read()
             with open(save_key_path, "wb") as file:
                 file.write(content)
-        except:
-         raise HTTPException(status_code=500, detail=f"Failed to save key_file due to error: {e}")    
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Failed to save key_file due to error: {e}")    
      
         # Now we can start the processing
-        # Input PPTTC file path
-        input_ppttc_path = os.path.join(key_dir, "key.ppttc")
-
         # Read key-file
-        with open(input_ppttc_path, "r", encoding="utf-8") as f:
+        with open(save_key_path, "r", encoding="utf-8") as f:
             keyfile_contents = json.load(f)
             
-        # Replace all template url in PPTTC
-        # TEMPLATE_URL = f"http://192.168.1.104:8000/sessions/{uuid}/template/template.pptx"
-        TEMPLATE_URL = "http://192.168.1.104:8000/template/template.pptx"
-
+        # Replace Template URL in PPTTC with proper
+        TEMPLATE_URL = f"{fastapi_external_url}/sessions/{uuid}/template/template.pptx"
         for slide in keyfile_contents:
             if "template" in slide:
                 slide["template"] = TEMPLATE_URL
-                
-        # Send to Thinkcell Server
-        server_url = "http://108.198.175.239:8080/"
-        headers = {
-            "Content-Type": "application/vnd.think-cell.ppttc+json",
-        }
 
-        response = requests.post(server_url, headers=headers, json=keyfile_contents)
+        threading.Thread(target=send_to_thinkcell_server, args=(keyfile_contents, uuid)).start()
         
-        if response.status_code == 200:
-            output_dir = os.path.abspath(os.path.join("sessions", uuid, "output"))
-            os.makedirs(output_dir, exist_ok=True)
-            output_filename = "output.pptx"
-            output_path = os.path.join(output_dir, output_filename)
-            
-            with open(output_path, "wb") as f:
-                f.write(response.content)
-            print(f"✅ Received and saved {output_filename}!")
-            
-            output_url = f"http://192.168.1.104:8000/sessions/{uuid}/output/output.pptx"
-            
-            return {"message": "Success",
-                    "file": os.path.basename(output_path),
-                    "url": output_url}
-        else:
-            print(f"❌ Error: {response.status_code}")
-            print(response.text)
+        output_url = f"{fastapi_external_url}/sessions/{uuid}/output/output.pptx"
+        
+        return {
+            "message": "Files received and processing started",
+            "url": output_url
+            }
 
     elif key_ext == '.csv':
-        print(key_ext)
+        return {"message": "CSV upload not implemented yet"}
+    
+def cleanup_sessions(max_live_hours=3, interval_checks_mins=30):
+    while True:
+        now = datetime.now()
+        cutoff = now - timedelta(max_live_hours)
         
-# [x] if key_file is ppttc, proceed with storing key into key folder 
-# [ ] if key_file is csv, convert to ppttc before storing into key folder
-# [x] either way, save the pptx template in template foolder
-# then send both key and template file to the thinkcell server
-# save output pptx to output folder and send that output back to user
+        for uuid_folder in os.listdir(session_dir):
+            folder_path = os.path.join(session_dir, uuid_folder)
+            if os.path.isdir(folder_path):
+                last_modified = datetime.fromtimestamp(os.path.getmtime(folder_path))
+                if last_modified < cutoff:
+                    try:
+                        shutil.rmtree(folder_path)
+                        print(f"Deleted expired session folder: {folder_path}")
+                    except Exception as e:
+                        print(f"Error deleting folder {folder_path}: {e}")
+        time.sleep(interval_checks_mins * 60)
+        
+threading.Thread(target=cleanup_sessions, daemon=True).start()
+
+# To-Do
+# [x] If key_file is ppttc, proceed with storing key into Key folder 
+# [x] Either way, save the PPTX template in Template foolder
+# [X] Then send both Key and Template file to the Thinkcell server
+# [X} Save output PPTX to Output folder and send that output back to user
+
+## Low Priority
+# [ ] If key_file is a CSV, convert to PPTTC before storing into Key folder
 
 @app.get("/")
 def read_root():

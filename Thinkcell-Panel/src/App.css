@@ -31,7 +31,7 @@
     --foreground: var(--clr-light);
     --background: var(--clr-dark);
     --clr-accent: #ff4040;
-    --clr-primary: var(--clr-secondary);
+    --clr-secondary: var(--clr-primary);
   }
 }
 
@@ -146,6 +146,10 @@
   color: var(--background);
 }
 
+.h2 {
+  margin-top: 0rem;
+}
+
 .card p {
   text-align: left;
 }
@@ -211,8 +215,8 @@
 }
 
 .download-btn {
-  background-color: var(--clr-primary);
-  color: var(--background);
+  background-color: var(--clr-secondary);
+  color: var(--foreground);
   margin-top:1rem;
 }
 

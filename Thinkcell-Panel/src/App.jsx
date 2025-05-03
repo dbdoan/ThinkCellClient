@@ -57,6 +57,16 @@ function App() {
   function handleSubmit(e) {
     e.preventDefault();
 
+    if (uploadSuccess) {
+      handleReset();
+      return;
+    }
+
+    if (isUploading) return;
+
+    setUploadSuccess(false);
+    setDownloadURL(null);
+
     if (!keyFile || !templateFile) {
       alert("Please upload both files before submitting!");
       return;
@@ -69,7 +79,6 @@ function App() {
     setIsUploading(true);
 
     const fastapiURL = import.meta.env.VITE_FASTAPI_ENDPOINT;
-    console.log(fastapiURL);
     const userID = sessionStorage.getItem('userID');
     const formData = new FormData();
 
@@ -86,14 +95,52 @@ function App() {
       }
       return response.json();
     })
-    .then(data => {console.log('Success: ', data);
-      
-      setUploadSuccess(true);
-      setDownloadURL(data.url);
-    })
-    .catch(error => {
-      console.error('Error: ', error);
-    })
+    .then(data => {
+      console.log('Server Response: ', data);
+      const outputURL = `${data.url}?t=${Date.now()}`
+      setDownloadURL(outputURL);
+
+      const checkIfFileExists = async (url, retries=10, delay=1000) => {
+        for (let i = 0; i < retries; i++) {
+          try {
+            const response = await fetch(url, { method: 'HEAD' });
+            if (response.ok) {
+              return true;
+            }
+          } catch (e) {
+            // Retry
+          }
+          await new Promise(resolve => setTimeout(resolve, delay));
+        }
+          return false;
+        };
+
+        setTimeout(() => {
+          checkIfFileExists(outputURL).then(fileAvailable => {
+            if (fileAvailable) {
+              setUploadSuccess(true);
+            } else {
+              alert("No output file available. Try Again or contact support.");
+            }
+            setIsUploading(false);
+          });
+        }, 15000);
+      })
+      .catch(error => {
+        console.error('Error: ', error);
+        setIsUploading(false);
+    });
+  }
+
+  function handleReset() {
+    setKeyFile(null);
+    setTemplateFile(null);
+    setIsUploading(false);
+    setUploadSuccess(false);
+    setDownloadURL(null);
+
+    document.getElementById("keyFileInput").value = "";
+    document.getElementById("templateFileInput").value="";
   }
 
   return (
@@ -103,7 +150,7 @@ function App() {
           <IntroComponent />
         </div>
         <div className="developed-by">
-          <h2>
+          <h2 className="h2">
             by <span className="name-highlight">Danny Doan</span>
           </h2>
         </div>
@@ -111,13 +158,15 @@ function App() {
 
       <div className="card">
         <form id="upload-form" onSubmit={handleSubmit}>
-          <p className="instructions">To generate a Thinkcell PPTX, 2 files are needed:</p>
-          <p>1. PPTTC (key) or a properly formatted CSV</p>
-          <input className="choose-file" type="file" name="jsonFile" accept=".ppttc, .csv" onChange={ handleKeyFileChange }/>
+          <p className="instructions">Provide proper input files to generate and receive a Thinkcell Powerpoint file:</p>
+          <p>1. PPTTC Key</p>
+          <input id="keyFileInput" className="choose-file" type="file" name="jsonFile" accept=".ppttc, .csv" onChange={ handleKeyFileChange }/>
           <p>2. PPTX Template</p>
-          <input className="choose-file" type="file" name="ppttcFile" accept=".pptx" onChange={ handleTemplateFileChange } />
+          <input id="templateFileInput" className="choose-file" type="file" name="ppttcFile" accept=".pptx" onChange={ handleTemplateFileChange } />
 
-          <button className="submit-btn" type="submit" disabled={ isUploading }> { isUploading ? 'Processing...': 'Submit' } </button>
+          <button className="submit-btn" type="submit" disabled={ isUploading }> 
+            { isUploading ? 'Processing...': uploadSuccess ? 'Try Another' : 'Submit' 
+            } </button>
 
           <button className="download-btn" type="button" disabled={ !uploadSuccess || !downloadURL } onClick={() => window.open(downloadURL, '_blank')}> {uploadSuccess ? 'Download': 'No Output File' }</button>
         </form>
