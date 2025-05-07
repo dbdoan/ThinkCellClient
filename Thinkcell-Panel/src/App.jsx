@@ -124,7 +124,7 @@ function App() {
             }
             setIsUploading(false);
           });
-        }, 15000);
+        }, 20000);
       })
       .catch(error => {
         console.error('Error: ', error);

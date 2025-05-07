@@ -14,6 +14,7 @@ A web application that converts CSV (Excel) data into Think-Cell PowerPoint pres
 - [x] Create API to accept input files
 - [x] Thinkcell Server to FastAPI integration
 - [x] PPTTC + PPTX => PPTX logic
+- [x] Moved Think-cell server hosting to Azure 24/7
 
 # Frontend
 - [ ] Add box for access code
@@ -22,6 +23,5 @@ A web application that converts CSV (Excel) data into Think-Cell PowerPoint pres
 - [x] Reset chosen files
 
 # Low Priority
-- [ ] Let users define their own servers for generation
 - [ ] POSTGRE SQL server to store access codes
 - [ ] Access code generation validation
