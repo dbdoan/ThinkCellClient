@@ -7,6 +7,14 @@
 
 A web application that converts CSV (Excel) data into Think-Cell PowerPoint presentations using a predefined template, streamlining the creation of consistent and data-driven slides.
 
+## How-to
+Pre-Req: Set-up an environment with FASTAPI and React.
+1. Create a .env file in the FastAPI folder with VITE_LOCAL_URL, VITE_EXTERNAL_URL, FASTAPI_EXTERNAL_URL, THINKCELL_SERVER_URL set.
+2. Create a .env file under Thinkcell-Panel folder with VITE_FASTAPI_ENDPOINT set.
+3. Start Think-cell Server with Think-cell's included server program on a Windows machine.
+4. Start FASTAPI and React site.
+5. To test, I have included sample files from Think-cell themselves, under FastAPI folder. JSON formatted PTTCC and PPTX template.
+
 ## Roadmap
 
 # Backend
