@@ -1,7 +1,7 @@
 # ThinkCellClient
 
 # Preview
-<img src="https://i.ibb.co/TBZSDv6w/think-Cell-Automator-Preview.png" alt="Preview of Thinkcell Automator website" width="auto" height="auto">
+<img src="https://i.ibb.co/HLnvmBqP/think-Cell-Automator-Preview.jpg" alt="Preview of Thinkcell Automator website" width="auto" height="auto">
 
 ## About
 
