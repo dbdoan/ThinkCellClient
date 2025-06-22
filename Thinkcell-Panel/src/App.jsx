@@ -100,7 +100,7 @@ function App() {
       const outputURL = `${data.url}?t=${Date.now()}`
       setDownloadURL(outputURL);
 
-      const checkIfFileExists = async (url, retries=10, delay=1000) => {
+      const checkIfFileExists = async (url, retries=10, delay=500) => {
         for (let i = 0; i < retries; i++) {
           try {
             const response = await fetch(url, { method: 'HEAD' });

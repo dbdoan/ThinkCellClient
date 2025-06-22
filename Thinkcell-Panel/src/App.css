@@ -180,6 +180,10 @@
   border-color: white;
 }
 
+.download-btn:hover {
+  border-color: white;
+}
+
 .instructions {
   font-weight: bold;
 }
